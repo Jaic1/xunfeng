@@ -24,4 +24,5 @@ def write(scan_type, host, port, info):
     except Exception, e:
         print 'logerror',e
         pass
+    sys.stdout.flush()
     mutex.release()

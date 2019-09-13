@@ -7,6 +7,7 @@ import icmp
 import cidr
 
 AC_PORT_LIST = {}
+AC_PORT_LIST_MUTEX = threading.Lock()
 MASSCAN_AC = 0
 
 
@@ -22,7 +23,7 @@ class ThreadNum(threading.Thread):
             except:
                 break
             try:
-                if self.mode:
+                if self.mode == 1 or self.mode == 2:
                     port_list = AC_PORT_LIST[task_host]
                 else:
                     port_list = self.config_ini['Port_list'].split('|')[
@@ -37,15 +38,53 @@ class ThreadNum(threading.Thread):
                 self.queue.task_done()
 
 
+class ThreadNmap(threading.Thread):
+    def __init__(self, host, queue):
+        threading.Thread.__init__(self)
+        self.host = host
+        self.queue = queue
+
+    def run(self):
+        while True:
+            try:
+                port_list = self.queue.get(block=False)
+            except:
+                break
+            try:
+                sys.path.append(sys.path[0] + "/plugin")
+                nmap = __import__("nmap")
+
+                open_ports = nmap.nmap.port_scan(self.host, port_list, '-sS -n')
+                if open_ports:
+                    AC_PORT_LIST_MUTEX.acquire()
+                    if self.host not in AC_PORT_LIST.keys():
+                        AC_PORT_LIST[self.host] = open_ports
+                    else:
+                        AC_PORT_LIST[self.host].extend(open_ports)
+                    AC_PORT_LIST_MUTEX.release()
+            except Exception, e:
+                print e
+            finally:
+                self.queue.task_done()
+
+
 class start:
     def __init__(self, config):  # 默认配置
         self.config_ini = config
         self.queue = Queue.Queue()
         self.thread = int(self.config_ini['Thread'])
         self.scan_list = self.config_ini['Scan_list'].split('\n')
+        # 指定端口扫描的方式
+        # 0.不扫描，用配置的端口列表
+        # 1.使用Masscan进行全端口扫描
+        # 2.使用nmap进行全端口扫描
         self.mode = int(self.config_ini['Masscan'].split('|')[0])
         self.icmp = int(self.config_ini['Port_list'].split('|')[0])
         self.white_list = self.config_ini.get('White_list', '').split('\n')
+
+        # newly added variable
+        self.nmap_portscan_thread = 200
+        self.mode = 2
 
     def run(self):
         global AC_PORT_LIST
@@ -59,12 +98,13 @@ class start:
             for white_ip in self.white_list:
                 if white_ip in ip_list:
                     ip_list.remove(white_ip)
+            # 如果用户在前台关闭了ICMP存活探测则进行全IP段扫描
+            if self.icmp:
+                ip_list = self.get_ac_ip(ip_list)
+
             if self.mode == 1:
                 masscan_path = self.config_ini['Masscan'].split('|')[2]
                 masscan_rate = self.config_ini['Masscan'].split('|')[1]
-                # 如果用户在前台关闭了ICMP存活探测则进行全IP段扫描
-                if self.icmp:
-                    ip_list = self.get_ac_ip(ip_list)
                 self.masscan_ac[0] = 1
                 # 如果安装了Masscan即使用Masscan进行全端口扫描
                 AC_PORT_LIST = self.masscan(
@@ -78,11 +118,15 @@ class start:
             else:
                 all_ip_list.extend(ip_list)
         if self.mode == 0:
-            if self.icmp:
-                all_ip_list = self.get_ac_ip(all_ip_list)
             for ip_str in all_ip_list:
                 self.queue.put(ip_str)  # 加入队列
             self.scan_start()  # TCP探测模式开始扫描
+        elif self.mode == 2:
+            # 使用nmap进行全端口扫描（暂时和masscan一致）
+            for ip_str in all_ip_list:
+                self.nmap_scanport(ip_str)
+                self.queue.put(ip_str)
+            self.scan_start()
 
     def scan_start(self):
         for i in range(self.thread):  # 开始扫描
@@ -105,6 +149,23 @@ class start:
         except Exception, e:
             print e
             print 'No masscan plugin detected'
+
+    def nmap_scanport(self, ip):
+        thread_cnt = self.nmap_portscan_thread
+        ports = range(1, 65536)
+        buckets = [[] for i in range(thread_cnt)]
+        queue_nmap = Queue.Queue()
+
+        for i in range(len(ports)):
+            buckets[i%thread_cnt].append(ports[i])
+        for bucket in buckets:
+            queue_nmap.put(bucket)
+        
+        for i in range(thread_cnt):
+            t = ThreadNmap(ip, queue_nmap)
+            t.setDaemon(True)
+            t.start()
+        queue_nmap.join()
 
     def get_ip_list(self, ip):
         ip_list_tmp = []
