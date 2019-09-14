@@ -1,1 +1,1 @@
-{"options":{"autoIndexId":true,"flags":1},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"xunfeng_bak.Plugin"}]}
+{"options":{"flags":1},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"xunfeng.Plugin"}],"uuid":"a3fae4cff17d4b13a364ccdab9ed30fc"}
