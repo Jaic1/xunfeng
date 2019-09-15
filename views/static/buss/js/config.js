@@ -3,6 +3,7 @@ $('.update').click(function () {
     value = $(document.getElementsByName($(this).attr('inputname'))).val();
     if (name == "Masscan") {
         value = $("#speed").val() + "|" + value;
+        value += "|" + $("#nmap-thread").val() + "|" + $("#nmap-op").val();
     }
     $.post('/updateconfig', {
         name: name,
@@ -18,10 +19,11 @@ $('.update').click(function () {
     })
 });
 
-$('#mastag').change(function () {
+$('input[name=scan-flag]').change(function () {
     var name = "Masscan_Flag";
     var conftype = "nascan";
-    var value = $(this).is(':checked') == true ? "1" : "0";
+    var value = String($(this).attr('id'));
+    value = value.substring(value.length-1);
     $.post('/updateconfig', {name: name, value: value, conftype: conftype}, function (data) {
         if (data == "patherr") {
             $("#mastag").click();
@@ -32,7 +34,6 @@ $('#mastag').change(function () {
         }
     })
 });
-
 
 $('#icmptag').change(function () {
     var name = "Port_list_Flag";

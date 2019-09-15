@@ -71,26 +71,75 @@
                                         <h4>
                                             {{ i['info'] }}
                                             <i class="zmdi zmdi-help-outline zmdi-hc-1x" title="{{ i['help'] }}"></i>
-                                            <span style="float: right"><input type="checkbox" data-plugin="switchery"
-                                                                              data-size="small" data-color="#3bafda"
-                                                                              id="mastag"/></span>
+                                            <span style="float: right">
+                                                <div class="radio">
+                                                    <input id="radio-0" name="scan-flag" type="radio" checked>
+                                                    <label for="radio-0" class="radio-label">使用默认端口列表</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-1" name="scan-flag" type="radio">
+                                                    <label  for="radio-1" class="radio-label">Masscan</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-2" name="scan-flag" type="radio">
+                                                    <label for="radio-2" class="radio-label">Nmap</label>
+                                                </div>
+                                            </span>
+                                        </h4>
+                                    {% elif i['value'].split('|')[0] == '1' %}
+                                        <h4>
+                                            {{ i['info'] }}
+                                            <i class="zmdi zmdi-help-outline zmdi-hc-1x" title="{{ i['help'] }}"></i>
+                                            <span style="float: right">
+                                                <div class="radio">
+                                                    <input id="radio-0" name="scan-flag" type="radio">
+                                                    <label for="radio-0" class="radio-label">使用默认端口列表</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-1" name="scan-flag" type="radio" checked>
+                                                    <label  for="radio-1" class="radio-label">Masscan</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-2" name="scan-flag" type="radio">
+                                                    <label for="radio-2" class="radio-label">Nmap</label>
+                                                </div>
+                                            </span>
                                         </h4>
                                     {% else %}
                                         <h4>
                                             {{ i['info'] }}
                                             <i class="zmdi zmdi-help-outline zmdi-hc-1x" title="{{ i['help'] }}"></i>
-                                            <span style="float: right"><input type="checkbox" checked
-                                                                              data-plugin="switchery" data-size="small"
-                                                                              data-color="#3bafda" id="mastag"/></span>
+                                            <span style="float: right">
+                                                <div class="radio">
+                                                    <input id="radio-0" name="scan-flag" type="radio">
+                                                    <label for="radio-0" class="radio-label">使用默认端口列表</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-1" name="scan-flag" type="radio">
+                                                    <label  for="radio-1" class="radio-label">Masscan</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-2" name="scan-flag" type="radio" checked>
+                                                    <label for="radio-2" class="radio-label">Nmap</label>
+                                                </div>
+                                            </span>
                                         </h4>
                                     {% endif %}
                                     <div class="col-md-12">
                                         <div class="col-md-6"><input type="text" class="form-control"
                                                                      value="{{ i['value'].split('|')[2] }}"
-                                                                     name={{ i['type'] }} placeholder="路径"/></div>
+                                                                     name={{ i['type'] }} placeholder="masscan路径"/></div>
                                         <div class="col-md-6"><input type="text" class="form-control"
                                                                      value="{{ i['value'].split('|')[1] }}" id="speed"
                                                                      placeholder="速率"/></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="col-md-6"><input type="text" class="form-control"
+                                                                     value="{{ i['value'].split('|')[4] }}" id="nmap-op"
+                                                                     placeholder="nmap选项（暂不可用）"/></div>
+                                        <div class="col-md-6"><input type="text" class="form-control"
+                                                                     value="{{ i['value'].split('|')[3] }}" id="nmap-thread"
+                                                                     placeholder="nmap线程数"/></div>
                                     </div>
                                 {% else %}
                                     <h4>

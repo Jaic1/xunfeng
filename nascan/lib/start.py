@@ -74,17 +74,10 @@ class start:
         self.queue = Queue.Queue()
         self.thread = int(self.config_ini['Thread'])
         self.scan_list = self.config_ini['Scan_list'].split('\n')
-        # 指定端口扫描的方式
-        # 0.不扫描，用配置的端口列表
-        # 1.使用Masscan进行全端口扫描
-        # 2.使用nmap进行全端口扫描
         self.mode = int(self.config_ini['Masscan'].split('|')[0])
+        self.nmap_portscan_thread = int(self.config_ini['Masscan'].split('|')[3])
         self.icmp = int(self.config_ini['Port_list'].split('|')[0])
         self.white_list = self.config_ini.get('White_list', '').split('\n')
-
-        # newly added variable
-        self.nmap_portscan_thread = 200
-        self.mode = 2
 
     def run(self):
         global AC_PORT_LIST
