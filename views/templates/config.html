@@ -74,7 +74,7 @@
                                             <span style="float: right">
                                                 <div class="radio">
                                                     <input id="radio-0" name="scan-flag" type="radio" checked>
-                                                    <label for="radio-0" class="radio-label">使用默认端口列表</label>
+                                                    <label for="radio-0" class="radio-label">不扫描，直接使用默认端口列表</label>
                                                 </div>
                                                 <div class="radio">
                                                     <input id="radio-1" name="scan-flag" type="radio">
@@ -82,7 +82,11 @@
                                                 </div>
                                                 <div class="radio">
                                                     <input id="radio-2" name="scan-flag" type="radio">
-                                                    <label for="radio-2" class="radio-label">Nmap</label>
+                                                    <label for="radio-2" class="radio-label">Nmap（全端口扫描）</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-3" name="scan-flag" type="radio">
+                                                    <label for="radio-3" class="radio-label">Nmap（在默认端口列表中过滤）</label>
                                                 </div>
                                             </span>
                                         </h4>
@@ -93,7 +97,7 @@
                                             <span style="float: right">
                                                 <div class="radio">
                                                     <input id="radio-0" name="scan-flag" type="radio">
-                                                    <label for="radio-0" class="radio-label">使用默认端口列表</label>
+                                                    <label for="radio-0" class="radio-label">不扫描，直接使用默认端口列表</label>
                                                 </div>
                                                 <div class="radio">
                                                     <input id="radio-1" name="scan-flag" type="radio" checked>
@@ -101,7 +105,34 @@
                                                 </div>
                                                 <div class="radio">
                                                     <input id="radio-2" name="scan-flag" type="radio">
-                                                    <label for="radio-2" class="radio-label">Nmap</label>
+                                                    <label for="radio-2" class="radio-label">Nmap（全端口扫描）</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-3" name="scan-flag" type="radio">
+                                                    <label for="radio-3" class="radio-label">Nmap（在默认端口列表中过滤）</label>
+                                                </div>
+                                            </span>
+                                        </h4>
+                                    {% elif i['value'].split('|')[0] == '2' %}
+                                        <h4>
+                                            {{ i['info'] }}
+                                            <i class="zmdi zmdi-help-outline zmdi-hc-1x" title="{{ i['help'] }}"></i>
+                                            <span style="float: right">
+                                                <div class="radio">
+                                                    <input id="radio-0" name="scan-flag" type="radio">
+                                                    <label for="radio-0" class="radio-label">不扫描，直接使用默认端口列表</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-1" name="scan-flag" type="radio">
+                                                    <label  for="radio-1" class="radio-label">Masscan</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-2" name="scan-flag" type="radio" checked>
+                                                    <label for="radio-2" class="radio-label">Nmap（全端口扫描）</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-3" name="scan-flag" type="radio">
+                                                    <label for="radio-3" class="radio-label">Nmap（在默认端口列表中过滤）</label>
                                                 </div>
                                             </span>
                                         </h4>
@@ -112,15 +143,19 @@
                                             <span style="float: right">
                                                 <div class="radio">
                                                     <input id="radio-0" name="scan-flag" type="radio">
-                                                    <label for="radio-0" class="radio-label">使用默认端口列表</label>
+                                                    <label for="radio-0" class="radio-label">不扫描，直接使用默认端口列表</label>
                                                 </div>
                                                 <div class="radio">
                                                     <input id="radio-1" name="scan-flag" type="radio">
                                                     <label  for="radio-1" class="radio-label">Masscan</label>
                                                 </div>
                                                 <div class="radio">
-                                                    <input id="radio-2" name="scan-flag" type="radio" checked>
-                                                    <label for="radio-2" class="radio-label">Nmap</label>
+                                                    <input id="radio-2" name="scan-flag" type="radio">
+                                                    <label for="radio-2" class="radio-label">Nmap（全端口扫描）</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <input id="radio-3" name="scan-flag" type="radio" checked>
+                                                    <label for="radio-3" class="radio-label">Nmap（在默认端口列表中过滤）</label>
                                                 </div>
                                             </span>
                                         </h4>

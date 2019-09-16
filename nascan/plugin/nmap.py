@@ -31,7 +31,7 @@ class nmap:
         open_ports = []
         for report_host in nm_report.hosts:
             for serv in report_host.services:
-                if 'open' in serv.state:
+                if 'open' == serv.state:
                     open_ports.append(serv.port)
 
         return open_ports

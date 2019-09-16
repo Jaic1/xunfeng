@@ -478,7 +478,9 @@ def UpdateConfig():
             name = 'Masscan'
             path = Mongo.coll['Config'].find_one({'type': 'nascan'})["config"]["Masscan"]["value"]
             path = path[2:]
-            if value == '2':
+            if value == '3':
+                value = '3|' + path
+            elif value == '2':
                 value = '2|' + path
             elif value == '1':
                 value = '1|' + path
