@@ -27,10 +27,18 @@ class ThreadNum(threading.Thread):
                     port_list = self.port_list
                 else:
                     port_list = AC_PORT_LIST[task_host]
-                _s = scan.scan(task_host, port_list)
-                _s.config_ini = self.config_ini  # 提供配置信息
-                _s.statistics = self.statistics  # 提供统计信息
-                _s.run()
+                if port_list and len(port_list):
+                    if self.server_mode == 0:
+                        _s = scan.scan(task_host, port_list)
+                        _s.config_ini = self.config_ini  # 提供配置信息
+                        _s.statistics = self.statistics  # 提供统计信息
+                        _s.run()
+                    else:
+                        sys.path.append(sys.path[0] + "/plugin")
+                        nmap = __import__("nmap")
+                        _nm = nmap.nmap(task_host, port_list, self.config_ini)
+                        _nm.statistics = self.statistics  # 提供统计信息
+                        _nm.run()
             except Exception, e:
                 print e
             finally:
@@ -73,13 +81,20 @@ class start:
         self.config_ini = config
         self.queue = Queue.Queue()
         self.thread = int(self.config_ini['Thread'])
-        self.scan_list = self.config_ini['Scan_list'].split('\n')
+        self.scan_list = self.config_ini['Scan_list'].split('|')[1].split('\n')
+        self.server_mode = int(self.config_ini['Scan_list'].split('|')[0])
         self.mode = int(self.config_ini['Masscan'].split('|')[0])
         self.nmap_portscan_thread = int(self.config_ini['Masscan'].split('|')[3])
         self.nmap_options = self.config_ini['Masscan'].split('|')[4]
         self.icmp = int(self.config_ini['Port_list'].split('|')[0])
         self.port_list = str(self.config_ini['Port_list'].split('|')[1]).split('\n')
         self.white_list = self.config_ini.get('White_list', '').split('\n')
+
+        # debug
+        self.mode = 0
+        self.scan_list = '172.31.159.0/24'
+        self.server_mode = 1
+        self.port_list = ['102', '502']
 
     def run(self):
         global AC_PORT_LIST
@@ -128,6 +143,7 @@ class start:
             t = ThreadNum(self.queue)
             t.setDaemon(True)
             t.mode = self.mode
+            t.server_mode = self.server_mode
             t.port_list = self.port_list
             t.config_ini = self.config_ini
             t.statistics = self.statistics

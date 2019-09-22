@@ -8,3 +8,4 @@ na_db = getattr(db_conn, ProductionConfig.DBNAME)
 na_db.authenticate(ProductionConfig.DBUSERNAME, ProductionConfig.DBPASSWORD)
 NA_INFO = na_db.Info
 NA_HISTORY = na_db.History
+NA_HOST = na_db.Host
