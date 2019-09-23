@@ -82,7 +82,14 @@ class nmap:
             nm_options += '--script ' + 'banner' + ' '
         nm_host = NmapProcess(targets=self.ip, options=nm_options)
         nm_host.run()
-        nm_report = NmapParser.parse(nm_host.stdout)
+        if nm_host.has_failed():
+            log.write('nmap_error', self.ip, port, '(failed) '+nm_host.stderr)
+            return None
+        try:
+            nm_report = NmapParser.parse(nm_host.stdout)
+        except NmapParserException:
+            log.write('nmap_error', self.ip, port, '(parsing) '+nm_host.stdout)
+            return None
         serv_report = nm_report.hosts[0].services[0]
 
         if not serv_report.open():

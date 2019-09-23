@@ -21,6 +21,8 @@ def write(scan_type, host, port, info):
             print "[%s] %s active" % (time_str, host)
         elif scan_type == 'info':
             print "[%s] %s" % (time_str, info)
+        elif scan_type == 'nmap_error':
+            print "[%s] %s:%d nmap error: %s" % (time_str, host, port, info) 
     except Exception, e:
         print 'logerror',e
         pass

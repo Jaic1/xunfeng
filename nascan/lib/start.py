@@ -1,10 +1,10 @@
 # coding:utf-8
-import sys
 import Queue
 import threading
 import scan
 import icmp
 import cidr
+from plugin import masscan, nmap
 
 AC_PORT_LIST = {}
 AC_PORT_LIST_MUTEX = threading.Lock()
@@ -34,8 +34,6 @@ class ThreadNum(threading.Thread):
                         _s.statistics = self.statistics  # 提供统计信息
                         _s.run()
                     else:
-                        sys.path.append(sys.path[0] + "/plugin")
-                        nmap = __import__("nmap")
                         _nm = nmap.nmap(task_host, port_list, self.config_ini)
                         _nm.statistics = self.statistics  # 提供统计信息
                         _nm.run()
@@ -59,9 +57,6 @@ class ThreadNmap(threading.Thread):
             except:
                 break
             try:
-                sys.path.append(sys.path[0] + "/plugin")
-                nmap = __import__("nmap")
-
                 open_ports = nmap.nmap.port_scan(self.host, port_list, self.options)
                 if open_ports:
                     AC_PORT_LIST_MUTEX.acquire()
@@ -92,7 +87,7 @@ class start:
 
         # debug
         self.mode = 0
-        self.scan_list = '172.31.159.0/24'
+        self.scan_list = ['172.31.159.0/24']
         self.server_mode = 1
         self.port_list = ['102', '502']
 
@@ -154,8 +149,6 @@ class start:
         try:
             if len(ip) == 0:
                 return
-            sys.path.append(sys.path[0] + "/plugin")
-            m_scan = __import__("masscan")
             result = m_scan.run(ip, masscan_path, masscan_rate)
             return result
         except Exception, e:
