@@ -9,7 +9,7 @@ from libnmap.parser import NmapParser, NmapParserException
 class nmap:
     def __init__(self, task_host, port_list, config_ini):
         self.ip = str(task_host)
-        self.port_list = port_list
+        self.port_list = [str(port) for port in port_list]
         self.config_ini = config_ini
         self.nse_dict = {'102': 's7-info', '502': 'modbus-discover', '1911': 'fox-info',
 			'9600': 'omron-info', '20000': 'dnp3-info', '44818': 'enip-info'}
@@ -18,8 +18,6 @@ class nmap:
                 nse_port = str(nse.split('|')[0])
                 nse_script = str(nse.split('|')[1])
                 self.nse_dict[nse_port] = nse_script
-        # debug
-        print self.nse_dict
 
     @classmethod
     def port_scan(cls, host, port_list, options):
@@ -56,7 +54,14 @@ class nmap:
     def host_discern(self):
         nm_host = NmapProcess(targets=self.ip, options='-sn');
         nm_host.run()
-        nm_report = NmapParser.parse(nm_host.stdout)
+        if nm_host.has_failed():
+           log.write('nmap_error', self.ip, 0, '(failed) '+nm_host.stderr)
+           return False
+        try:
+            nm_report = NmapParser.parse(nm_host.stdout)
+        except NmapParserException:
+           log.write('nmap_error', self.ip, 0, '(parsing) '+nm_host.stdout)
+           return False
         host_report = nm_report.hosts[0]
 
         if not host_report.is_up():

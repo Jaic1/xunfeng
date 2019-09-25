@@ -89,7 +89,7 @@ class start:
         self.mode = 0
         self.scan_list = ['172.31.159.0/24']
         self.server_mode = 1
-        self.port_list = ['102', '502']
+        self.port_list = ['102', '502', '9600']
 
     def run(self):
         global AC_PORT_LIST
