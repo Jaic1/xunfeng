@@ -6,6 +6,8 @@ from config import ProductionConfig
 from views.lib import Conn
 import os
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(64)
 app.config.from_object(ProductionConfig)
