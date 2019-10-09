@@ -52,7 +52,7 @@ class nmap:
             self.server_discern(port)
 
     def host_discern(self):
-        nm_host = NmapProcess(targets=self.ip, options='-sn');
+        nm_host = NmapProcess(targets=self.ip, options='-O -v');
         nm_host.run()
         if nm_host.has_failed():
            log.write('nmap_error', self.ip, 0, '(failed) '+nm_host.stderr)
@@ -67,13 +67,16 @@ class nmap:
         if not host_report.is_up():
             return False
 
-        log.write('info', self.ip, 0, str(self.ip)+' is up(nmap\'s host_discern)')
+        log.write('info', self.ip, 0, str(self.ip)+' is up')
         time_ = datetime.datetime.now()
         mongo.NA_HOST.update({'ip': self.ip},
                             {"$set": {
                                 'hostname': ''.join(host_report.hostnames),
                                 'mac': host_report.mac,
-                                'vendor': host_report.vendor, 'time': time_
+                                'vendor': host_report.vendor,
+                                'time': time_,
+                                'OS': host_report.os_class_probabilities()[0].description
+                                    if host_report.os_class_probabilities() else 'unknown'
                                 }
                             },
                             upsert=True)

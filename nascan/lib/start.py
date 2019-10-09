@@ -85,12 +85,6 @@ class start:
         self.port_list = str(self.config_ini['Port_list'].split('|')[1]).split('\n')
         self.white_list = self.config_ini.get('White_list', '').split('\n')
 
-        # debug
-        self.mode = 0
-        self.scan_list = ['172.31.159.0/24']
-        self.server_mode = 1
-        self.port_list = ['102', '502', '9600']
-
     def run(self):
         global AC_PORT_LIST
         all_ip_list = []
@@ -149,7 +143,7 @@ class start:
         try:
             if len(ip) == 0:
                 return
-            result = m_scan.run(ip, masscan_path, masscan_rate)
+            result = masscan.run(ip, masscan_path, masscan_rate)
             return result
         except Exception, e:
             print e
