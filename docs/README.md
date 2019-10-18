@@ -291,3 +291,13 @@ P.S. plan字段表示执行周期，特别地，0表示执行一次
 2. task_netloc: 来自task_target(Task表中的target字段)  
 形如["10.245.143.1",7167]
 3. task_plugin: 插件名称
+
+## 扫描后漏洞库匹配
+在nascan/plugin/nmap.py中增加类方法check_vul,
+用于端口扫描后的漏洞检测  
+具体如何根据扫描出的服务信息，端口信息等去匹配漏洞库，可以暂时参考下：  
+[https://null-byte.wonderhowto.com/how-to/easily-detect-cves-with-nmap-scripts-0181925/](https://null-byte.wonderhowto.com/how-to/easily-detect-cves-with-nmap-scripts-0181925/)  
+[https://github.com/scipag/vulscan](https://github.com/scipag/vulscan)  
+[https://github.com/vulnersCom/nmap-vulners](https://github.com/vulnersCom/nmap-vulners)
+
+### vulscan.nse分析(https://github.com/scipag/vulscan)

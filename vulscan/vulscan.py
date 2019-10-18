@@ -39,7 +39,6 @@ kp = kunpeng()
 
 class vulscan():
     def __init__(self, task_id, task_netloc, task_plugin):
-        # TODO
         self.task_id = task_id
         self.task_netloc = task_netloc
         self.task_plugin = task_plugin

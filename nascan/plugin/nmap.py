@@ -48,8 +48,11 @@ class nmap:
         if not self.host_discern():
             return
         
+        port_info = {}
         for port in self.port_list:
-            self.server_discern(port)
+            port_info = self.server_discern(port)
+            if port_info:
+                self.check_vul(port_info)
 
     def host_discern(self):
         nm_host = NmapProcess(targets=self.ip, options='-O -v');
@@ -101,7 +104,7 @@ class nmap:
         serv_report = nm_report.hosts[0].services[0]
 
         if not serv_report.open():
-            return
+            return None
 
         # record nse result into database
         time_ = datetime.datetime.now()
@@ -109,7 +112,7 @@ class nmap:
         nm_update = {
             "ip": self.ip,
             "port": port,
-            "server": serv_report.service,
+            "server": serv_report.service if serv_report.service else 'unknown',
             "time": time_
         }
         if serv_report.scripts_results:
@@ -118,7 +121,7 @@ class nmap:
 
         history_info = mongo.NA_INFO.find_one_and_delete({
             "ip": self.ip, "port": port})
-        log.write("server", self.ip, port, serv_report.service)
+        log.write("server", self.ip, port, nm_update['server'])
         mongo.NA_INFO.insert(nm_update)
         if history_info:
             self.statistics[date_]['update'] += 1
@@ -128,3 +131,27 @@ class nmap:
             mongo.NA_HISTORY.insert(history_info)
         else:
             self.statistics[date_]['add'] += 1
+
+        return nm_update
+
+    def check_vul(self, port_info):
+        # use only service of port_info to check vul at this stage
+        # may add more match with vul in the future
+        if not 'server' in port_info.keys():
+            return
+        
+        port = port_info['port']
+        service = port_info['server']
+        if service == 'unknown':
+            return
+
+        docs = mongo.NA_PLUGIN.find({'$or': [
+            {'keyword': {'$regex': str(service).lower()}},
+            {'filename': {'$regex': str(service).lower()}},
+            {'name': {'$regex': str(service).lower()}},
+            {'info': {'$regex': str(service).lower()}}
+        ]})
+
+        for doc in docs:
+            log.write('nmap_vul', self.ip, port,
+                str(doc['level']) + '-' + str(doc['name']))
